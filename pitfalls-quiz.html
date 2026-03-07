@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personal Pitfalls Assessment</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#f4f6f8;margin:0;padding:0}
+.container{max-width:900px;margin:auto;padding:30px}
+h1{text-align:center}
+.card{background:white;padding:20px;border-radius:12px;margin-bottom:20px;box-shadow:0 6px 18px rgba(0,0,0,0.08)}
+.question{margin-bottom:18px}
+.scale{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px}
+.scale label{background:#f1f3f5;padding:6px 10px;border-radius:6px;cursor:pointer}
+button{background:#2563eb;color:white;border:none;padding:14px 24px;border-radius:8px;font-size:16px;cursor:pointer}
+button:hover{background:#1d4ed8}
+#results{margin-top:30px}
+.result-box{padding:10px 0}
+canvas{max-width:600px;margin:auto}
+footer{text-align:center;margin-top:40px;color:#666;font-size:14px}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Personal Pitfalls Assessment</h1>
+
+<div class="card">
+<p>Rate each statement from <b>0–4</b>.</p>
+<p><b>0</b> Strongly Disagree &nbsp; <b>1</b> Disagree &nbsp; <b>2</b> Neutral &nbsp; <b>3</b> Agree &nbsp; <b>4</b> Strongly Agree</p>
+</div>
+
+<form id="quiz"></form>
+
+<div style="text-align:center">
+<button onclick="calculate()" type="button">Calculate My Results</button>
+</div>
+
+<div id="results" class="card" style="display:none">
+<h2>Your Results</h2>
+<div id="scoreText"></div>
+<canvas id="chart"></canvas>
+</div>
+
+<footer>
+Personal Pitfalls Self‑Assessment
+</footer>
+
+</div>
+
+<script>
+
+const questions=[
+"I am driven, disciplined, and hardworking. Others describe me as direct or intimidating.",
+"I know what I want and don't always consider how it impacts others.",
+"I struggle to be vulnerable or open about my feelings.",
+"I believe in 'happy wife, happy life' and try hard not to upset my wife.",
+"I project an image of success, stability, and righteousness.",
+"I prefer going with the flow rather than taking initiative.",
+"I believe I have God‑given authority to lead my household.",
+"I can be possessive and demanding of my wife's time.",
+"When my wife wants emotional closeness I may respond with distance.",
+"I am a people pleaser.",
+"I seek recognition or admiration to reinforce my self‑worth.",
+"I prefer relaxing alone rather than engaging in family responsibilities.",
+"My leadership can be heavy‑handed.",
+"I quickly point out what others do wrong.",
+"I sometimes use silence or withdrawal to punish or control.",
+"I suppress my own feelings or needs.",
+"I keep secrets about finances or personal struggles.",
+"I avoid practical household tasks.",
+"In conflict I may respond with anger.",
+"In conflict I can be stubborn.",
+"In conflict I tend to withdraw.",
+"In conflict I try to keep everyone happy.",
+"In conflict I may omit information or tell half truths.",
+"In conflict I change the subject hoping issues disappear.",
+"I can be controlling or restrictive.",
+"I make decisions without consulting my wife.",
+"My wife says she feels unheard or disconnected.",
+"I struggle with setting boundaries and overextend myself.",
+"I sometimes live a double life.",
+"I dismiss my wife's concerns when inconvenient."
+];
+
+const form=document.getElementById("quiz");
+
+questions.forEach((q,i)=>{
+const div=document.createElement("div");
+div.className="card question";
+let html=`<p><b>${i+1}. ${q}</b></p><div class='scale'>`;
+for(let n=0;n<=4;n++){
+html+=`<label><input type='radio' name='q${i}' value='${n}' required> ${n}</label>`
+}
+html+="</div>";
+div.innerHTML=html;
+form.appendChild(div);
+});
+
+function sum(indexes){
+return indexes.reduce((t,i)=>{
+let val=document.querySelector(`input[name=q${i}]:checked`);
+return t+(val?parseInt(val.value):0);
+},0);
+}
+
+function interpret(score){
+if(score<=5) return "Not a major struggle";
+if(score<=10) return "Mild tendency";
+if(score<=15) return "Significant pattern";
+return "Strong pitfall";
+}
+
+let chart
+
+function calculate(){
+
+const ceo=sum([0,12,18,19,24]);
+const king=sum([1,6,7,25,26]);
+const withholder=sum([2,8,14,20,29]);
+const nice=sum([3,9,15,21,27]);
+const illusion=sum([4,10,16,22,28]);
+const couch=sum([5,11,17,23,13]);
+
+const scores=[ceo,king,withholder,nice,illusion,couch]
+const labels=["CEO","King of the Castle","Withholder","Nice Guy","Illusionist","Couch Potato"]
+
+let text=""
+
+labels.forEach((l,i)=>{
+text+=`<div class='result-box'><b>${l}:</b> ${scores[i]}/20 — ${interpret(scores[i])}</div>`
+})
+
+document.getElementById("scoreText").innerHTML=text
+
+document.getElementById("results").style.display="block"
+
+if(chart){chart.destroy()}
+
+chart=new Chart(document.getElementById("chart"),{
+ type:"radar",
+ data:{
+ labels:labels,
+ datasets:[{
+ label:"Your Pitfall Profile",
+ data:scores
+ }]
+ },
+ options:{
+ scales:{
+ r:{
+ beginAtZero:true,
+ max:20
+ }
+ }
+ }
+})
+
+window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})
+
+}
+
+</script>
+
+</body>
+</html>
