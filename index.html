@@ -40,7 +40,8 @@ footer{text-align:center;margin-top:40px;color:#666;font-size:14px}
 <div id="results" class="card" style="display:none">
 <h2>Your Results</h2>
 <div id="scoreText"></div>
-<canvas id="chart"></canvas>
+<canvas id="radarChart"></canvas>
+<canvas id="barChart" style="margin-top:40px"></canvas>
 </div>
 
 <footer>
@@ -112,7 +113,8 @@ if(score<=15) return "Significant pattern";
 return "Strong pitfall";
 }
 
-let chart
+let radarChart
+let barChart
 
 function calculate(){
 
@@ -136,9 +138,10 @@ document.getElementById("scoreText").innerHTML=text
 
 document.getElementById("results").style.display="block"
 
-if(chart){chart.destroy()}
+if(radarChart){radarChart.destroy()}
+if(barChart){barChart.destroy()}
 
-chart=new Chart(document.getElementById("chart"),{
+radarChart=new Chart(document.getElementById("radarChart"),{
  type:"radar",
  data:{
  labels:labels,
@@ -149,15 +152,28 @@ chart=new Chart(document.getElementById("chart"),{
  },
  options:{
  scales:{
- r:{
- beginAtZero:true,
- max:20
- }
+ r:{beginAtZero:true,max:20}
  }
  }
 })
 
-window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})
+barChart=new Chart(document.getElementById("barChart"),{
+ type:"bar",
+ data:{
+ labels:labels,
+ datasets:[{
+ label:"Pitfall Scores",
+ data:scores
+ }]
+ },
+ options:{
+ scales:{
+ y:{beginAtZero:true,max:20}
+ }
+ }
+})
+
+window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})({top:document.body.scrollHeight,behavior:'smooth'})
 
 }
 
@@ -165,4 +181,3 @@ window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})
 
 </body>
 </html>
-
